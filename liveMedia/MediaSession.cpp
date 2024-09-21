@@ -864,7 +864,7 @@ Boolean MediaSubsession::initiate(int useSpecialRTPoffset) {
       // to us in the SDP description, then create it now:
       ourCrypto = getCrypto();
       if (ourCrypto == NULL) { // then fMIKEYState is also NULL; create both
-	fMIKEYState = new MIKEYState();
+	fMIKEYState = MIKEYState::createNew();
 	ourCrypto = fCrypto = new SRTPCryptographicContext(*fMIKEYState);
       }
 

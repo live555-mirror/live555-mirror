@@ -59,6 +59,17 @@ OnDemandServerMediaSubsession::~OnDemandServerMediaSubsession() {
 
 char const*
 OnDemandServerMediaSubsession::sdpLines(int addressFamily) {
+  if (fLastStreamToken != NULL && fReuseFirstSource) {
+    // We're reusing an existing stream.
+    // Hack: Check whether the SRTP ROC has changed.
+    // If so, we need to regenerate the SDP description.
+    RTPSink* rtpSink = ((StreamState*)fLastStreamToken)->rtpSink();
+    if (rtpSink != NULL && rtpSink->srtpROC() != fSRTP_ROC) {
+      delete fSDPLines; fSDPLines = NULL;
+      fSRTP_ROC = rtpSink->srtpROC();
+    }
+  }
+
   if (fSDPLines == NULL) {
     // We need to construct a set of SDP lines that describe this
     // subsession (as a unicast stream).  To do so, we first create
@@ -73,8 +84,9 @@ OnDemandServerMediaSubsession::sdpLines(int addressFamily) {
     RTPSink* dummyRTPSink = createNewRTPSink(dummyGroupsock, rtpPayloadType, inputSource);
     if (dummyRTPSink != NULL) {
       if (fParentSession->streamingUsesSRTP) {
-	fMIKEYStateMessage = dummyRTPSink->setupForSRTP(fParentSession->streamingIsEncrypted,
-							fMIKEYStateMessageSize);
+	fMIKEYStateMessage
+	  = dummyRTPSink->setupForSRTP(fParentSession->streamingIsEncrypted, fSRTP_ROC,
+				       fMIKEYStateMessageSize);
       }
 
       if (dummyRTPSink->estimatedBitrate() > 0) estBitrate = dummyRTPSink->estimatedBitrate();

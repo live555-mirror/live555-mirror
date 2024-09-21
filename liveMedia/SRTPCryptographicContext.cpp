@@ -74,7 +74,7 @@ Boolean SRTPCryptographicContext
 
     if (!fHaveReceivedSRTPPackets) {
       // First time:
-      nextROC = thisPacketsROC = fReceptionROC = 0;
+      nextROC = thisPacketsROC = fReceptionROC = fMIKEYState.initialROC();
       nextHighRTPSeqNum = rtpSeqNum;
     } else {
       // Check whether the sequence number has rolled over, or is out-of-order:
@@ -366,6 +366,14 @@ Boolean SRTPCryptographicContext
   
   // An error occurred:
   return False;
+}
+
+u_int32_t SRTPCryptographicContext::sendingROC() const {
+#ifndef NO_OPENSSL
+  return fSendingROC;
+#else
+  return 0;
+#endif
 }
 
 #ifndef NO_OPENSSL

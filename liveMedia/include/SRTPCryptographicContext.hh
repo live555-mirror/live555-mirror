@@ -47,6 +47,8 @@ public:
   Boolean processOutgoingSRTCPPacket(u_int8_t* buffer, unsigned inPacketSize,
 				     unsigned& outPacketSize);
 
+  u_int32_t sendingROC() const;
+
 #ifndef NO_OPENSSL
 private:
   // Definitions specific to the "SRTP_AES128_CM_HMAC_SHA1_80" ciphersuite.

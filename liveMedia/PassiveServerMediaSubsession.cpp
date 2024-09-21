@@ -69,11 +69,18 @@ Boolean PassiveServerMediaSubsession::rtcpIsMuxed() {
 
 char const*
 PassiveServerMediaSubsession::sdpLines(int /*addressFamily*/) {
+  if (fRTPSink.srtpROC() != fSRTP_ROC) {
+    // Hack: The SRTP ROC has changed, so we need to regenerate the SDP description.
+    delete fSDPLines; fSDPLines = NULL;
+    fSRTP_ROC = fRTPSink.srtpROC();
+  }
+
   if (fSDPLines == NULL ) {
     // Construct a set of SDP lines that describe this subsession:
     // Use the components from "rtpSink".
     if (fParentSession->streamingUsesSRTP) { // Hack to set up for SRTP/SRTCP
-      fRTPSink.setupForSRTP(fParentSession->streamingIsEncrypted);
+      fRTPSink.setupForSRTP(fParentSession->streamingIsEncrypted, fSRTP_ROC);
+
       if (fRTCPInstance != NULL) fRTCPInstance->setupForSRTCP();
     }
 

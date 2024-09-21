@@ -356,8 +356,6 @@ static Boolean parseVorbisSetup_codebook(LEBitVector& bv) {
       }
 #ifdef DEBUG_SETUP_HEADER
       fprintf(stderr, "\t\t\t\tcodeword length[%d]:\t%d\n", i, codewordLength);
-#else
-      codewordLength = codewordLength; // to prevent compiler warning
 #endif
     }
   } else { // ordered

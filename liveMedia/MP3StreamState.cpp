@@ -195,7 +195,9 @@ void MP3StreamState::getAttributes(char* buffer, unsigned bufferSize) const {
 Boolean MP3StreamState::findNextFrame() {
   unsigned char hbuf[8];
   unsigned l; int i;
+#ifdef DEBUG_ERRORS
   int attempt = 0;
+#endif
 
  read_again:
   if (readFromStream(hbuf, 4) != 4) return False;
@@ -283,7 +285,9 @@ Boolean MP3StreamState::findNextFrame() {
 	 track within a short time (and hopefully without
 	 too much distortion in the audio output).  */
       do {
+#ifdef DEBUG_ERRORS
 	attempt++;
+#endif
 	memmove (&hbuf[0], &hbuf[1], 7);
 	if (readFromStream(&hbuf[3],1) != 1) {
 	  return False;

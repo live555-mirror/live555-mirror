@@ -359,7 +359,7 @@ void ServerMediaSubsessionIterator::reset() {
 
 ServerMediaSubsession::ServerMediaSubsession(UsageEnvironment& env)
   : Medium(env),
-    fParentSession(NULL), fNext(NULL), fTrackNumber(0), fTrackId(NULL) {
+    fParentSession(NULL), fSRTP_ROC(0), fNext(NULL), fTrackNumber(0), fTrackId(NULL) {
 }
 
 ServerMediaSubsession::~ServerMediaSubsession() {
