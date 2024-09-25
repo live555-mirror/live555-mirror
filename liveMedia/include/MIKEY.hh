@@ -30,7 +30,7 @@ along with this library; if not, write to the Free Software Foundation, Inc.,
 
 class MIKEYState {
 public:
-  static MIKEYState* createNew(Boolean useEncryption = True, u_int32_t rocForSRTP = 0);
+  static MIKEYState* createNew(Boolean useEncryption = True);
       // initialize with default parameters
   static MIKEYState* createNew(u_int8_t const* messageToParse, unsigned messageSize);
       // (Attempts to) parse a binary MIKEY message, returning a new "MIKEYState" if successful
@@ -42,6 +42,8 @@ public:
       // Returns a binary message representing the current MIKEY state, of size "messageSize" bytes.
       // This array is dynamically allocated by this routine, and must be delete[]d by the caller.
 
+  void setROC(u_int32_t roc);
+
   // Accessors for the encryption/authentication parameters:
   Boolean encryptSRTP() const { return fEncryptSRTP; }
   Boolean encryptSRTCP() const { return fEncryptSRTCP; }
@@ -51,7 +53,7 @@ public:
   Boolean useAuthentication() const { return fUseAuthentication; }
 
 protected:
-  MIKEYState(Boolean useEncryption, u_int32_t rocForSRTP);
+  MIKEYState(Boolean useEncryption);
       // called only by "createNew()"
   MIKEYState(u_int8_t const* messageToParse, unsigned messageSize, Boolean& parsedOK);
       // called only by "createNew()"

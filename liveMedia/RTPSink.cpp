@@ -42,9 +42,10 @@ Boolean RTPSink::lookupByName(UsageEnvironment& env, char const* sinkName,
 
 void RTPSink::setupForSRTP(Boolean useEncryption, u_int32_t roc) {
   // Set up keying state for streaming via SRTP:
-  delete fMIKEYState; fMIKEYState = MIKEYState::createNew(useEncryption, roc);
+  if (fMIKEYState == NULL) fMIKEYState = MIKEYState::createNew(useEncryption);
+  fMIKEYState->setROC(roc);
 
-  if (fCrypto == NULL) fCrypto = new SRTPCryptographicContext(*fMIKEYState);
+  delete fCrypto; fCrypto = new SRTPCryptographicContext(*fMIKEYState);
 }
 
 u_int8_t* RTPSink::setupForSRTP(Boolean useEncryption, u_int32_t roc,
@@ -52,15 +53,16 @@ u_int8_t* RTPSink::setupForSRTP(Boolean useEncryption, u_int32_t roc,
   // Set up keying state for streaming via SRTP:
   setupForSRTP(useEncryption, roc);
 
-  u_int8_t* MIKEYStateMessage = fMIKEYState->generateMessage(resultMIKEYStateMessageSize);
-  return MIKEYStateMessage;
+  return fMIKEYState->generateMessage(resultMIKEYStateMessageSize);
 }
 
-void RTPSink::setupForSRTP(u_int8_t const* MIKEYStateMessage, unsigned MIKEYStateMessageSize) {
+void RTPSink::setupForSRTP(u_int8_t const* MIKEYStateMessage, unsigned MIKEYStateMessageSize,
+			   u_int32_t roc) {
   // Set up keying state for streaming via SRTP:
   delete fMIKEYState; fMIKEYState = MIKEYState::createNew(MIKEYStateMessage, MIKEYStateMessageSize);
+  fMIKEYState->setROC(roc);
 
-  if (fCrypto == NULL) fCrypto = new SRTPCryptographicContext(*fMIKEYState);
+  delete fCrypto; fCrypto = new SRTPCryptographicContext(*fMIKEYState);
 }
 
 char const* RTPSink::sdpMediaType() const {

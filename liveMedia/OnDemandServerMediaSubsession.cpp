@@ -84,9 +84,15 @@ OnDemandServerMediaSubsession::sdpLines(int addressFamily) {
     RTPSink* dummyRTPSink = createNewRTPSink(dummyGroupsock, rtpPayloadType, inputSource);
     if (dummyRTPSink != NULL) {
       if (fParentSession->streamingUsesSRTP) {
-	fMIKEYStateMessage
-	  = dummyRTPSink->setupForSRTP(fParentSession->streamingIsEncrypted, fSRTP_ROC,
-				       fMIKEYStateMessageSize);
+	if (fMIKEYStateMessage != NULL) {
+	  // Use the existing stream's MIKEY info to generate the SDP:
+	  dummyRTPSink->setupForSRTP(fMIKEYStateMessage, fMIKEYStateMessageSize, fSRTP_ROC);
+	} else {
+	  // Create new MIKEY info for this stream:
+	  fMIKEYStateMessage
+	    = dummyRTPSink->setupForSRTP(fParentSession->streamingIsEncrypted, fSRTP_ROC,
+					 fMIKEYStateMessageSize);
+	}
       }
 
       if (dummyRTPSink->estimatedBitrate() > 0) estBitrate = dummyRTPSink->estimatedBitrate();
@@ -189,7 +195,7 @@ void OnDemandServerMediaSubsession
 	  : createNewRTPSink(rtpGroupsock, rtpPayloadType, mediaSource);
 	if (rtpSink != NULL) {
 	  if (fParentSession->streamingUsesSRTP) {
-	    rtpSink->setupForSRTP(fMIKEYStateMessage, fMIKEYStateMessageSize);
+	    rtpSink->setupForSRTP(fMIKEYStateMessage, fMIKEYStateMessageSize, fSRTP_ROC);
 	  }
 	  if (rtpSink->estimatedBitrate() > 0) streamBitrate = rtpSink->estimatedBitrate();
 	}

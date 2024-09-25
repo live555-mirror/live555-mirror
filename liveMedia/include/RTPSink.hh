@@ -54,7 +54,8 @@ public:
   u_int8_t* setupForSRTP(Boolean useEncryption, u_int32_t roc,
 			 unsigned& resultMIKEYStateMessageSize);
       // as above, but returns the binary MIKEY state
-  void setupForSRTP(u_int8_t const* MIKEYStateMessage, unsigned MIKEYStateMessageSize);
+  void setupForSRTP(u_int8_t const* MIKEYStateMessage, unsigned MIKEYStateMessageSize,
+		    u_int32_t roc);
       // as above, but takes a MIKEY state message as parameter
 
   virtual char const* sdpMediaType() const; // for use in SDP m= lines
