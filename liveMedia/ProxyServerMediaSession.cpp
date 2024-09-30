@@ -130,12 +130,12 @@ ProxyServerMediaSession::~ProxyServerMediaSession() {
 
   // Then delete our state:
   Medium::close(fClientMediaSession);
-  Medium::close(fProxyRTSPClient);
+  Medium::close(fProxyRTSPClient); fProxyRTSPClient = NULL;
   Medium::close(fPresentationTimeSessionNormalizer);
 }
 
 char const* ProxyServerMediaSession::url() const {
-  return fProxyRTSPClient == NULL ? NULL : fProxyRTSPClient->url();
+  return fProxyRTSPClient == NULL ? "" : fProxyRTSPClient->url();
 }
 
 Groupsock* ProxyServerMediaSession
