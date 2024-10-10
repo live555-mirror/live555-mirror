@@ -626,9 +626,6 @@ void StreamState::endPlaying(Destinations* dests, unsigned clientSessionId) {
 
   if (dests->isTCP) {
     if (fRTPSink != NULL) {
-      // Comment out the following, because it prevents the "RTSPClientConnection" object
-      // from being closed after handling a "TEARDOWN": #####
-      //RTPInterface::clearServerRequestAlternativeByteHandler(fRTPSink->envir(), dests->tcpSocketNum);
       fRTPSink->removeStreamSocket(dests->tcpSocketNum, dests->rtpChannelId);
     }
     if (fRTCPInstance != NULL) {
