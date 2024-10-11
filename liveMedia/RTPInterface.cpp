@@ -434,6 +434,7 @@ SocketDescriptor::SocketDescriptor(UsageEnvironment& env, int socketNum, TLSStat
 }
 
 SocketDescriptor::~SocketDescriptor() {
+  fDeleteMyselfNext = False;
   fEnv.taskScheduler().turnOffBackgroundReadHandling(fOurSocketNum);
   removeSocketDescription(fEnv, fOurSocketNum);
 
@@ -510,10 +511,14 @@ void SocketDescriptor
 void SocketDescriptor::tcpReadHandler(SocketDescriptor* socketDescriptor, int mask) {
   // Call the read handler until it returns false, with a limit to avoid starving other sockets
   unsigned count = 2000;
+  Boolean areInRecursiveCall = socketDescriptor->fAreInReadHandlerLoop;
+
   socketDescriptor->fAreInReadHandlerLoop = True;
   while (!socketDescriptor->fDeleteMyselfNext && socketDescriptor->tcpReadHandler1(mask) && --count > 0) {}
-  socketDescriptor->fAreInReadHandlerLoop = False;
-  if (socketDescriptor->fDeleteMyselfNext) delete socketDescriptor;
+  if (!areInRecursiveCall) {
+    socketDescriptor->fAreInReadHandlerLoop = False;
+    if (socketDescriptor->fDeleteMyselfNext) delete socketDescriptor;
+  }
 }
 
 Boolean SocketDescriptor::tcpReadHandler1(int mask) {
