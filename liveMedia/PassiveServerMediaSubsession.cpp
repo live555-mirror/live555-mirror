@@ -71,7 +71,7 @@ char const*
 PassiveServerMediaSubsession::sdpLines(int /*addressFamily*/) {
   if (fRTPSink.srtpROC() != fSRTP_ROC) {
     // Hack: The SRTP ROC has changed, so we need to regenerate the SDP description.
-    delete fSDPLines; fSDPLines = NULL;
+    delete[] fSDPLines; fSDPLines = NULL;
     fSRTP_ROC = fRTPSink.srtpROC();
   }
 

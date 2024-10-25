@@ -65,8 +65,8 @@ OnDemandServerMediaSubsession::sdpLines(int addressFamily) {
     // If so, we need to regenerate the SDP description.
     RTPSink* rtpSink = ((StreamState*)fLastStreamToken)->rtpSink();
     if (rtpSink != NULL && rtpSink->srtpROC() != fSRTP_ROC) {
-      delete fSDPLines; fSDPLines = NULL;
       fSRTP_ROC = rtpSink->srtpROC();
+      setSDPLinesFromRTPSink(rtpSink, getStreamSource(fLastStreamToken), rtpSink->estimatedBitrate());
     }
   }
 
