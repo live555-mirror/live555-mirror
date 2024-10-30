@@ -66,6 +66,7 @@ OnDemandServerMediaSubsession::sdpLines(int addressFamily) {
     RTPSink* rtpSink = ((StreamState*)fLastStreamToken)->rtpSink();
     if (rtpSink != NULL && rtpSink->srtpROC() != fSRTP_ROC) {
       fSRTP_ROC = rtpSink->srtpROC();
+      rtpSink->setupForSRTP(fParentSession->streamingIsEncrypted, fSRTP_ROC);
       setSDPLinesFromRTPSink(rtpSink, getStreamSource(fLastStreamToken), rtpSink->estimatedBitrate());
     }
   }
