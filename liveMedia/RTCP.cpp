@@ -284,7 +284,7 @@ unsigned RTCPInstance::numMembers() const {
 }
 
 void RTCPInstance::setupForSRTCP() {
-  if (fCrypto == NULL && fSink != NULL) { // take crypto state (if any) from the sink instead:
+  if (fSink != NULL) { // take crypto state (if any) from the sink:
     fCrypto = fSink->getCrypto();
   }
 }
