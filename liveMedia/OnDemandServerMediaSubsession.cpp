@@ -458,7 +458,7 @@ void OnDemandServerMediaSubsession
   char const* mediaType = rtpSink->sdpMediaType();
   unsigned char rtpPayloadType = rtpSink->rtpPayloadType();
   struct sockaddr_storage const& addressForSDP = rtpSink->groupsockBeingUsed().groupAddress();
-  portNumBits portNumForSDP = ntohs(rtpSink->groupsockBeingUsed().port().num());
+  portNumBits portNumForSDP = 0; //ntohs(rtpSink->groupsockBeingUsed().port().num());
 
   AddressString ipAddressStr(addressForSDP);
   char* rtpmapLine = rtpSink->rtpmapLine();

@@ -275,7 +275,7 @@ Boolean SRTPCryptographicContext
       // Figure out this packet's 'index' (ROC|rtpSeqNum):
       u_int16_t const rtpSeqNum = (buffer[2]<<8)|buffer[3];
       if (!fHaveSentSRTPPackets) {
-	fSendingROC = 0;
+	fSendingROC = fMIKEYState.initialROC();
 	fHaveSentSRTPPackets = True; // for the future
       } else {
 	if (rtpSeqNum == 0) ++fSendingROC; // increment the ROC when the RTP seq num rolls over

@@ -45,7 +45,7 @@ void RTPSink::setupForSRTP(Boolean useEncryption, u_int32_t roc) {
   if (fMIKEYState == NULL) fMIKEYState = MIKEYState::createNew(useEncryption);
   fMIKEYState->setROC(roc);
 
-  delete fCrypto; fCrypto = new SRTPCryptographicContext(*fMIKEYState);
+  if (fCrypto == NULL) fCrypto = new SRTPCryptographicContext(*fMIKEYState);
 }
 
 u_int8_t* RTPSink::setupForSRTP(Boolean useEncryption, u_int32_t roc,
