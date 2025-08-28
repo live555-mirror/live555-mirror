@@ -4,53 +4,58 @@ name: live555 mirror
 # trigger for the workflow
 on:
   schedule:
-    - cron: '5 5 * * *'
+    - cron: '0 5 * * *'
 
-# # Design # #
-#
-# Checkout the repository
-# check the version of the liveMedia in original repository hosted
-# check the version of the liveMedia in cloned repository
-# compare the og version and this repo version
-#   if og version is greater, download the og version and replace the mirrored version
-
-# jobs which will be triggered
 jobs:
   mirror_schedule_job:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - name: clone the repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
       - name: perform the mirror ops based on version change
+        shell: bash
         run: |
-          ### get original repo version ###
-          og_ver=$(curl -sN http://www.live555.com/liveMedia/public/changelog.txt | head -n 1 | tr ":" "\0")
-          comp_og_ver=$(echo ${og_ver} | tr "." "\0" | tr "-" "\0")
-          clone_ver=$(echo ${og_ver} | tr "-" ".")
+          # get current version
+          changelog=$(curl -sN http://www.live555.com/liveMedia/public/changelog.txt)
+          current_version=$(echo ${changelog} | head -n 1 | cut -d: -f1)
+          current_changelog=$(echo ${changelog} | awk 'NR==1{flag=1; next} /^[0-9]{4}\.[0-9]{2}\.[0-9]{2}:/{flag=0} flag')
 
-          ### get mirrored repo version ###
-          if [ -f liveMedia/include/liveMedia_version.hh ]; then
-            mirror_ver=$(grep "define LIVEMEDIA_LIBRARY_VERSION_STRING" liveMedia/include/liveMedia_version.hh | awk '{print $3}' | tr "\"" "\0")
-            comp_mirror_ver=$(echo $mirror_ver | tr "." "\0" | tr "-" "\0")
+          echo -e "\e[1m[L] version\e[0m"
+          echo -e "$current_version"
+          echo -e "\e[1m[L] changelog\e[0m"
+          echo -e "$current_changelog"
+
+          # fetch current code and check for updates
+          echo -e "\e[1;34m$ rm -rf *\e[0m"
+          rm -rf *
+          echo -e "\e[1;34m$ wget --quiet http://www.live555.com/liveMedia/public/live.${current_version}.tar.gz\e[0m"
+          wget --quiet http://www.live555.com/liveMedia/public/live.${current_version}.tar.gz
+          echo -e "\e[1;34m$ tar -xzf live.${current_version}.tar.gz\e[0m"
+          tar -xzf live.${current_version}.tar.gz
+          echo -e "\e[1;34m$ cp -r live/* .\e[0m"
+          cp -r live/* .
+          echo -e "\e[1;34m$ rm -r live live.${current_version}.tar.gz\e[0m"
+          rm -r live live.${current_version}.tar.gz
+
+          echo -e "\e[1;34m$ git diff --exit-code\e[0m"
+          if git diff --exit-code; then
+            echo -e "\e[1m[L] No changes detected. Exiting...\e[0m"
+            exit 0
           else
-            mirror_ver=0
-            comp_mirror_ver=0
-          fi
+            echo -e "\e[1m[L] Changes detected. Proceeding with commit...\e[0m"
 
-          if [[ comp_og_ver -gt comp_mirror_ver ]]; then
-            echo -e "original version is greater than mirrored version"
-            rm -rf *
-            wget --quiet http://www.live555.com/liveMedia/public/live.${clone_ver}.tar.gz
-            tar -xzf live.${clone_ver}.tar.gz
-            cp -r live/* .
-            rm -r live live.${clone_ver}.tar.gz
-            git config user.name github-actions
-            git config user.email github-actions@github.com
+            echo -e "\e[1;34m$ git config\e[0m"
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            echo -e "\e[1;34m$ git add .\e[0m"
             git add .
-            git commit -m "version - $clone_ver"
+            echo -e "\e[1;34m$ git commit\e[0m"
+            git commit -m "version - $current_version" -m "$current_changelog"
+            echo -e "\e[1;34m$ git push\e[0m"
             git push
-          else
-            echo -e "original and mirrored version are same"
+            exit 0
           fi
 
+#
 # end of file
+#
