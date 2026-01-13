@@ -22,7 +22,6 @@ along with this library; if not, write to the Free Software Foundation, Inc.,
 
 #include "BasicUsageEnvironment.hh"
 #include "announceURL.hh"
-#define SERVER_USE_TLS 1//#####@@@@@
 
 UsageEnvironment* env;
 
@@ -83,7 +82,7 @@ int main(int argc, char** argv) {
 #ifndef STREAM_USING_SRTP
 #define STREAM_USING_SRTP True
 #endif
-  rtspServer->setTLSState("/home/ec2-user/ca.pem", "/home/ec2-user/cakey.pem",//#####@@@@@
+  rtspServer->setTLSState(PATHNAME_TO_CERTIFICATE_FILE, PATHNAME_TO_PRIVATE_KEY_FILE,
 			  STREAM_USING_SRTP);
 #endif
 
