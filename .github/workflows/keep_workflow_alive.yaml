@@ -3,6 +3,7 @@ name: Keep Workflow Alive
 on:
   schedule:
     - cron: '0 5 1 * *'
+  workflow_dispatch: # manual job trigger on request
 
 jobs:
   keep_alive_job:
@@ -10,17 +11,19 @@ jobs:
     steps:
       - name: clone the repository
         uses: actions/checkout@v5
+        with:
+          ref: br_dummy
 
       - name: push to dummy branch to keep workflow alive
         run: |
           echo -e "\e[1m[L] Keeping the workflow alive by pushing to dummy branch\e[0m"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git checkout -b br_dummy || git checkout br_dummy
           echo "Workflow kept alive at $(date)" > keep_alive.txt
+          git pull
           git add keep_alive.txt
           git commit -m "Keep workflow alive at $(date)"
-          git push origin br_dummy
+          git push --set-upstream origin br_dummy
 
 #
 # end of file

@@ -17,7 +17,7 @@ jobs:
         shell: bash
         run: |
           # get current version
-          curl -sL http://www.live555.com/liveMedia/public/changelog.txt -o changelog.txt
+          curl -sL https://download.live555.com/changelog.txt -o changelog.txt
           current_version=$(head -n 1 changelog.txt | cut -d: -f1)
           current_changelog=$(awk 'NR==1{flag=1; next} /^[0-9]{4}\.[0-9]{2}\.[0-9]{2}:/{flag=0} flag' changelog.txt)
 
@@ -29,8 +29,8 @@ jobs:
           # fetch current code and check for updates
           echo -e "\e[1;34m$ rm -rf *\e[0m"
           rm -rf *
-          echo -e "\e[1;34m$ wget --quiet http://www.live555.com/liveMedia/public/live.${current_version}.tar.gz\e[0m"
-          wget --quiet http://www.live555.com/liveMedia/public/live.${current_version}.tar.gz
+          echo -e "\e[1;34m$ wget --quiet https://download.live555.com/live.${current_version}.tar.gz\e[0m"
+          wget --quiet https://download.live555.com/live.${current_version}.tar.gz
           echo -e "\e[1;34m$ tar -xzf live.${current_version}.tar.gz\e[0m"
           tar -xzf live.${current_version}.tar.gz
           echo -e "\e[1;34m$ cp -r live/* .\e[0m"
