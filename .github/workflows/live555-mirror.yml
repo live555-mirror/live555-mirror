@@ -4,7 +4,7 @@ name: live555 mirror
 # trigger for the workflow
 on:
   schedule:
-    - cron: '0 5 * * *'
+    - cron: "0 5 * * *"
   workflow_dispatch: # manual job trigger on request
 
 jobs:
@@ -19,9 +19,11 @@ jobs:
           # get current version
           curl -sL https://download.live555.com/changelog.txt -o changelog.txt
           current_version=$(head -n 1 changelog.txt | cut -d: -f1)
-          current_changelog=$(awk 'NR==1{flag=1; next} /^[0-9]{4}\.[0-9]{2}\.[0-9]{2}:/{flag=0} flag' changelog.txt)
+          current_changelog=$(awk 'NR==1{flag=1; next} /^[0-9]{4}(\.|-)[0-9]{2}(\.|-)[0-9]{2}:/{flag=0} flag' changelog.txt)
 
           echo -e "\e[1m[L] version\e[0m"
+          echo -e "$current_version"
+          current_version=$(echo $current_version | tr "-" ".")
           echo -e "$current_version"
           echo -e "\e[1m[L] changelog\e[0m"
           echo -e "$current_changelog"
