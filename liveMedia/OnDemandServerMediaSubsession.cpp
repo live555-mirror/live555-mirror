@@ -557,14 +557,14 @@ void StreamState
 
   if (dests->isTCP) {
     // Change RTP and RTCP to use the TCP socket instead of UDP:
-    if (fRTPSink != NULL) {
+    if (fRTPSink != NULL && dests->rtpChannelId != 0xFF) {
       fRTPSink->addStreamSocket(dests->tcpSocketNum, dests->rtpChannelId, dests->tlsState);
       RTPInterface
 	::setServerRequestAlternativeByteHandler(fRTPSink->envir(), dests->tcpSocketNum,
 						 serverRequestAlternativeByteHandler, serverRequestAlternativeByteHandlerClientData);
         // So that we continue to handle RTSP commands from the client
     }
-    if (fRTCPInstance != NULL) {
+    if (fRTCPInstance != NULL && dests->rtcpChannelId != 0xFF) {
       fRTCPInstance->addStreamSocket(dests->tcpSocketNum, dests->rtcpChannelId, dests->tlsState);
 
       struct sockaddr_storage tcpSocketNumAsAddress; // hack
