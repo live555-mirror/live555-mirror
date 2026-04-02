@@ -1575,7 +1575,9 @@ void RTSPServer::RTSPClientSession
     
     subsession->getStreamParameters(fOurSessionId, fOurClientConnection->fClientAddr,
 				    clientRTPPort, clientRTCPPort,
-				    fStreamStates[trackNum].tcpSocketNum, rtpChannelId, rtcpChannelId,
+				    streamingMode == RTP_TCP
+				    ? fStreamStates[trackNum].tcpSocketNum : -1,
+				    rtpChannelId, rtcpChannelId,
                                     &fOurClientConnection->fTLS,
 				    destinationAddress, destinationTTL, fIsMulticast,
 				    serverRTPPort, serverRTCPPort,
