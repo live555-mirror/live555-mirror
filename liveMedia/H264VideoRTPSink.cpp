@@ -14,7 +14,7 @@ along with this library; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 **********/
 // "liveMedia"
-// Copyright (c) 1996-2026 Live Networks, Inc.  All rights reserved.
+// Copyright (c) 1996-2027 Live Networks, Inc.  All rights reserved.
 // RTP sink for H.264 video (RFC 3984)
 // Implementation
 
@@ -118,10 +118,10 @@ char const* H264VideoRTPSink::auxSDPLine() {
     + 6 /* 3 bytes in hex */
     + strlen(sps_base64) + strlen(pps_base64);
   char* fmtp = new char[fmtpFmtSize];
-  sprintf(fmtp, fmtpFmt,
-          rtpPayloadType(),
-	  profileLevelId,
-          sps_base64, pps_base64);
+  snprintf(fmtp, fmtpFmtSize, fmtpFmt,
+	   rtpPayloadType(),
+	   profileLevelId,
+	   sps_base64, pps_base64);
 
   delete[] sps_base64;
   delete[] pps_base64;

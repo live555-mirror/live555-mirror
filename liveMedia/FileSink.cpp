@@ -14,7 +14,7 @@ along with this library; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 **********/
 // "liveMedia"
-// Copyright (c) 1996-2026 Live Networks, Inc.  All rights reserved.
+// Copyright (c) 1996-2027 Live Networks, Inc.  All rights reserved.
 // File sinks
 // Implementation
 
@@ -34,10 +34,12 @@ FileSink::FileSink(UsageEnvironment& env, FILE* fid, unsigned bufferSize,
   fBuffer = new unsigned char[bufferSize];
   if (perFrameFileNamePrefix != NULL) {
     fPerFrameFileNamePrefix = strDup(perFrameFileNamePrefix);
-    fPerFrameFileNameBuffer = new char[strlen(perFrameFileNamePrefix) + 100];
+    fPerFrameFileNameBufferSize = strlen(perFrameFileNamePrefix) + 100;
+    fPerFrameFileNameBuffer = new char[fPerFrameFileNameBufferSize];
   } else {
     fPerFrameFileNamePrefix = NULL;
     fPerFrameFileNameBuffer = NULL;
+    fPerFrameFileNameBufferSize = 0;
   }
   fPrevPresentationTime.tv_sec = ~0; fPrevPresentationTime.tv_usec = 0;
 }
@@ -97,11 +99,14 @@ void FileSink::addData(unsigned char const* data, unsigned dataSize,
 	presentationTime.tv_sec == fPrevPresentationTime.tv_sec) {
       // The presentation time is unchanged from the previous frame, so we add a 'counter'
       // suffix to the file name, to distinguish them:
-      sprintf(fPerFrameFileNameBuffer, "%s-%lu.%06lu-%u", fPerFrameFileNamePrefix,
-	      presentationTime.tv_sec, presentationTime.tv_usec, ++fSamePresentationTimeCounter);
+      snprintf(fPerFrameFileNameBuffer, fPerFrameFileNameBufferSize, "%s-%lu.%06lu-%u",
+	       fPerFrameFileNamePrefix,
+	       presentationTime.tv_sec, presentationTime.tv_usec,
+	       ++fSamePresentationTimeCounter);
     } else {
-      sprintf(fPerFrameFileNameBuffer, "%s-%lu.%06lu", fPerFrameFileNamePrefix,
-	      presentationTime.tv_sec, presentationTime.tv_usec);
+      snprintf(fPerFrameFileNameBuffer, fPerFrameFileNameBufferSize, "%s-%lu.%06lu",
+	       fPerFrameFileNamePrefix,
+	       presentationTime.tv_sec, presentationTime.tv_usec);
       fPrevPresentationTime = presentationTime; // for next time
       fSamePresentationTimeCounter = 0; // for next time
     }

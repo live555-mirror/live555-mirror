@@ -14,7 +14,7 @@ along with this library; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 **********/
 // "liveMedia"
-// Copyright (c) 1996-2026 Live Networks, Inc.  All rights reserved.
+// Copyright (c) 1996-2027 Live Networks, Inc.  All rights reserved.
 // File Sinks
 // C++ header
 
@@ -64,6 +64,7 @@ protected:
   unsigned fBufferSize;
   char* fPerFrameFileNamePrefix; // used if "oneFilePerFrame" is True
   char* fPerFrameFileNameBuffer; // used if "oneFilePerFrame" is True
+  size_t fPerFrameFileNameBufferSize;
   struct timeval fPrevPresentationTime;
   unsigned fSamePresentationTimeCounter;
 };

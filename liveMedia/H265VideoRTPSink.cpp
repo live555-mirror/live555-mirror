@@ -14,7 +14,7 @@ along with this library; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 **********/
 // "liveMedia"
-// Copyright (c) 1996-2026 Live Networks, Inc.  All rights reserved.
+// Copyright (c) 1996-2027 Live Networks, Inc.  All rights reserved.
 // RTP sink for H.265 video
 // Implementation
 
@@ -135,9 +135,9 @@ char const* H265VideoRTPSink::auxSDPLine() {
   unsigned levelId = profileTierLevelHeaderBytes[11]; // general_level_idc
   u_int8_t const* interop_constraints = &profileTierLevelHeaderBytes[5];
   char interopConstraintsStr[100];
-  sprintf(interopConstraintsStr, "%02X%02X%02X%02X%02X%02X", 
-	  interop_constraints[0], interop_constraints[1], interop_constraints[2],
-	  interop_constraints[3], interop_constraints[4], interop_constraints[5]);
+  snprintf(interopConstraintsStr, sizeof interopConstraintsStr, "%02X%02X%02X%02X%02X%02X", 
+	   interop_constraints[0], interop_constraints[1], interop_constraints[2],
+	   interop_constraints[3], interop_constraints[4], interop_constraints[5]);
   delete[] vpsWEB;
 
   char* sprop_vps = base64Encode((char*)vps, vpsSize);
@@ -163,15 +163,15 @@ char const* H265VideoRTPSink::auxSDPLine() {
     + strlen(sprop_sps)
     + strlen(sprop_pps);
   char* fmtp = new char[fmtpFmtSize];
-  sprintf(fmtp, fmtpFmt,
-          rtpPayloadType(), profileSpace,
-	  profileId,
-	  tierFlag,
-	  levelId,
-	  interopConstraintsStr,
-	  sprop_vps,
-	  sprop_sps,
-	  sprop_pps);
+  snprintf(fmtp, fmtpFmtSize, fmtpFmt,
+	   rtpPayloadType(), profileSpace,
+	   profileId,
+	   tierFlag,
+	   levelId,
+	   interopConstraintsStr,
+	   sprop_vps,
+	   sprop_sps,
+	   sprop_pps);
 
   delete[] sprop_vps;
   delete[] sprop_sps;

@@ -14,7 +14,7 @@ along with this library; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 **********/
 // "liveMedia"
-// Copyright (c) 1996-2026 Live Networks, Inc.  All rights reserved.
+// Copyright (c) 1996-2027 Live Networks, Inc.  All rights reserved.
 // A 'ServerMediaSubsession' object that creates new, unicast, "RTPSink"s
 // on demand.
 // Implementation
@@ -162,6 +162,7 @@ void OnDemandServerMediaSubsession
 	  serverRTPPort = serverPortNum;
 	  rtpGroupsock = createGroupsock(nullAddress(destinationAddress.ss_family), serverRTPPort);
 	  if (rtpGroupsock->socketNum() >= 0) break; // success
+	  delete rtpGroupsock;
 	}
 
 	udpSink = BasicUDPSink::createNew(envir(), rtpGroupsock);
@@ -235,7 +236,9 @@ void OnDemandServerMediaSubsession
   } else { // UDP
     destinations = new Destinations(destinationAddress, clientRTPPort, clientRTCPPort);
   }
-  fDestinationsHashTable->Add((char const*)clientSessionId, destinations);
+  Destinations* prevDestinations
+    = (Destinations*)fDestinationsHashTable->Add((char const*)clientSessionId, destinations);
+  delete prevDestinations;
 
   fDoNotDisturb = False;
 }
@@ -498,7 +501,7 @@ void OnDemandServerMediaSubsession
     + strlen(auxSDPLine)
     + strlen(trackId());
   char* sdpLines = new char[sdpFmtSize];
-  sprintf(sdpLines, sdpFmt,
+  snprintf(sdpLines, sdpFmtSize, sdpFmt,
 	  mediaType, // m= <media>
 	  portNumForSDP, // m= <port>
 	  fParentSession->streamingUsesSRTP ? "S" : "",

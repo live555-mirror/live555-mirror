@@ -14,7 +14,7 @@ along with this library; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 **********/
 // "liveMedia"
-// Copyright (c) 1996-2026 Live Networks, Inc.  All rights reserved.
+// Copyright (c) 1996-2027 Live Networks, Inc.  All rights reserved.
 // EBML numbers (ids and sizes)
 // Implementation
 
@@ -28,11 +28,12 @@ EBMLNumber::~EBMLNumber() {
 }
 
 char* EBMLNumber::hexString() const {
-  static char printBuf[2*EBML_NUMBER_MAX_LEN + 1];
+  size_t const printBufSize = 2*EBML_NUMBER_MAX_LEN + 1;
+  static char printBuf[printBufSize];
   
   char* to = printBuf;
   for (unsigned i = 0; i < len; ++i) {
-    sprintf(to, "%02X", data[i]);
+    snprintf(to, printBufSize - (to-printBuf), "%02X", data[i]);
     to += 2;
   }
 

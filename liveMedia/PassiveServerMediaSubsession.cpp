@@ -14,7 +14,7 @@ along with this library; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 **********/
 // "liveMedia"
-// Copyright (c) 1996-2026 Live Networks, Inc.  All rights reserved.
+// Copyright (c) 1996-2027 Live Networks, Inc.  All rights reserved.
 // A 'ServerMediaSubsession' object that represents an existing
 // 'RTPSink', rather than one that creates new 'RTPSink's on demand.
 // Implementation
@@ -109,7 +109,7 @@ PassiveServerMediaSubsession::sdpLines(int /*addressFamily*/) {
       "%s"
       "%s"
       "a=control:%s\r\n";
-    unsigned sdpFmtSize = strlen(sdpFmt)
+    size_t const sdpFmtSize = strlen(sdpFmt)
       + strlen(mediaType) + 5 /* max short len */ + 1 + 3 /* max char len */
       + 3/*IP4 or IP6*/ + strlen(groupAddressStr.val()) + 3 /* max char len */
       + 20 /* max int len */
@@ -120,21 +120,21 @@ PassiveServerMediaSubsession::sdpLines(int /*addressFamily*/) {
       + strlen(auxSDPLine)
       + strlen(trackId());
     char* sdpLines = new char[sdpFmtSize];
-    sprintf(sdpLines, sdpFmt,
-	    mediaType, // m= <media>
-	    portNum, // m= <port>
-	    fParentSession->streamingUsesSRTP ? "S" : "",
-	    rtpPayloadType, // m= <fmt list>
-	    gs.groupAddress().ss_family == AF_INET ? "IP4" : "IP6", // c= address type
-	    groupAddressStr.val(), // c= <connection address>
-	    ttl, // c= TTL
-	    estBitrate, // b=AS:<bandwidth>
-	    rtpmapLine, // a=rtpmap:... (if present)
-	    keyMgmtLine, // a=key-mgmt:... (if present)
-	    rtcpmuxLine, // a=rtcp-mux:... (if present)
-	    rangeLine, // a=range:... (if present)
-	    auxSDPLine, // optional extra SDP line
-	    trackId()); // a=control:<track-id>
+    snprintf(sdpLines, sdpFmtSize, sdpFmt,
+	     mediaType, // m= <media>
+	     portNum, // m= <port>
+	     fParentSession->streamingUsesSRTP ? "S" : "",
+	     rtpPayloadType, // m= <fmt list>
+	     gs.groupAddress().ss_family == AF_INET ? "IP4" : "IP6", // c= address type
+	     groupAddressStr.val(), // c= <connection address>
+	     ttl, // c= TTL
+	     estBitrate, // b=AS:<bandwidth>
+	     rtpmapLine, // a=rtpmap:... (if present)
+	     keyMgmtLine, // a=key-mgmt:... (if present)
+	     rtcpmuxLine, // a=rtcp-mux:... (if present)
+	     rangeLine, // a=range:... (if present)
+	     auxSDPLine, // optional extra SDP line
+	     trackId()); // a=control:<track-id>
     delete[] (char*)rangeLine; delete[] keyMgmtLine; delete[] rtpmapLine;
 
     fSDPLines = strDup(sdpLines);
