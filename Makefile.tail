@@ -14,6 +14,8 @@ PROXY_SERVER_DIR = proxyServer
 HLS_PROXY_DIR = hlsProxy
 
 all:
+	# Begin by checking whether a new version of the code is available:
+	@if [ `curl -s https://download.live555.com/liveMedia_versionInt.txt` -ne `cat liveMedia/include/liveMedia_versionInt.txt` ]; then echo "Your version of the \"LIVE555 Streaming Media\" code is out of date. Please download the latest version: https://download.live555.com/live555-latest.tar.gz"; fi;
 	cd $(LIVEMEDIA_DIR) ; $(MAKE)
 	cd $(GROUPSOCK_DIR) ; $(MAKE)
 	cd $(USAGE_ENVIRONMENT_DIR) ; $(MAKE)

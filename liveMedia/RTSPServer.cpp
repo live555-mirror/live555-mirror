@@ -979,9 +979,12 @@ void RTSPServer::RTSPClientConnection::handleRequestBytes(int newBytesRead) {
 	  } else {
 	    handleHTTPCmd_StreamingGET(urlSuffix, (char const*)fRequestBuffer);
 	  }
-	} else if (strcmp(cmdName, "GET") == 0) {
+	} else if (strcmp(cmdName, "GET") == 0 && fClientOutputSocket == fClientInputSocket) {
+	  // We allow a HTTP "GET" (to set up HTTP tunneling) only if not already tunneling
 	  handleHTTPCmd_TunnelingGET(sessionCookie);
-	} else if (strcmp(cmdName, "POST") == 0) {
+	} else if (strcmp(cmdName, "POST") == 0 && fClientOutputSocket == fClientInputSocket) {
+	  // We allow a HTTP "GET" (to set up HTTP tunneling) only if not already tunneling
+
 	  // We might have received additional data following the HTTP "POST" command - i.e., the first Base64-encoded RTSP command.
 	  // Check for this, and handle it if it exists:
 	  unsigned char const* extraData = fLastCRLF+4;
@@ -1248,6 +1251,9 @@ void RTSPServer::RTSPClientConnection
 			  unsigned char const* extraData, unsigned extraDataSize) {
   // Change the socket number:
   envir().taskScheduler().disableBackgroundHandling(fClientInputSocket);
+  if (fClientInputSocket != fClientOutputSocket) ::closeSocket(fClientInputSocket);
+      // close the old input socket it it's not also being used for output
+  
   fClientInputSocket = newSocketNum;
   envir().taskScheduler().setBackgroundHandling(fClientInputSocket, SOCKET_READABLE|SOCKET_EXCEPTION,
 						incomingRequestHandler, this);
